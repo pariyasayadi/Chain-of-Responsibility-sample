@@ -1,0 +1,75 @@
+
+
+
+// Interface for Strategy
+public interface IDiscountStrategy
+{
+    decimal ApplyDiscount(decimal totalPrice);
+}
+
+// Concrete Strategies
+public class NoDiscountStrategy : IDiscountStrategy
+{
+    public decimal ApplyDiscount(decimal totalPrice)
+    {
+        return totalPrice;
+    }
+}
+
+public class SeasonalDiscountStrategy : IDiscountStrategy
+{
+    public decimal ApplyDiscount(decimal totalPrice)
+    {
+        return totalPrice * 0.9m; // 10% تخفیف
+    }
+}
+
+public class SpecialCustomerDiscountStrategy : IDiscountStrategy
+{
+    public decimal ApplyDiscount(decimal totalPrice)
+    {
+        return totalPrice * 0.8m; // 20% تخفیف برای مشتریان ویژه
+    }
+}
+
+// Context class
+public class ShoppingCart
+{
+    private IDiscountStrategy _discountStrategy;
+
+    public ShoppingCart(IDiscountStrategy discountStrategy)
+    {
+        _discountStrategy = discountStrategy;
+    }
+
+    public void SetDiscountStrategy(IDiscountStrategy discountStrategy)
+    {
+        _discountStrategy = discountStrategy;
+    }
+
+    public decimal CalculateTotalPrice(decimal totalPrice)
+    {
+        return _discountStrategy.ApplyDiscount(totalPrice);
+    }
+}
+
+// Usage
+class Program
+{
+    static void Main(string[] args)
+    {
+        ShoppingCart cart = new ShoppingCart(new NoDiscountStrategy());
+        decimal totalPrice = 100m;
+
+        // بدون تخفیف
+        Console.WriteLine($"Total Price without discount: {cart.CalculateTotalPrice(totalPrice)}");
+
+        // تغییر استراتژی به تخفیف فصلی
+        cart.SetDiscountStrategy(new SeasonalDiscountStrategy());
+        Console.WriteLine($"Total Price with seasonal discount: {cart.CalculateTotalPrice(totalPrice)}");
+
+        // تغییر استراتژی به تخفیف مشتریان ویژه
+        cart.SetDiscountStrategy(new SpecialCustomerDiscountStrategy());
+        Console.WriteLine($"Total Price for special customer: {cart.CalculateTotalPrice(totalPrice)}");
+    }
+}

@@ -1,0 +1,70 @@
+
+
+public abstract class Handler
+{
+    protected Handler _nextHandler;
+
+    public Handler SetNext(Handler nextHandler)
+    {
+        _nextHandler = nextHandler;
+        return _nextHandler;
+    }
+
+    public abstract void HandleRequest(string request);
+}
+
+public class EmailHandler : Handler
+{
+    public override void HandleRequest(string request)
+    {
+        if (request.Contains("@"))
+        {
+            Console.WriteLine("Email is valid.");
+            _nextHandler?.HandleRequest(request);
+        }
+        else
+        {
+            Console.WriteLine("Invalid Email.");
+        }
+    }
+}
+
+public class PasswordHandler : Handler
+{
+    public override void HandleRequest(string request)
+    {
+        if (request.Length >= 6)
+        {
+            Console.WriteLine("Password is valid.");
+            _nextHandler?.HandleRequest(request);
+        }
+        else
+        {
+            Console.WriteLine("Password is too short.");
+        }
+    }
+}
+
+public class AccessHandler : Handler
+{
+    public override void HandleRequest(string request)
+    {
+        Console.WriteLine("Access granted.");
+    }
+}
+
+// Usage
+class Program
+{
+    static void Main(string[] args)
+    {
+        var emailHandler = new EmailHandler();
+        var passwordHandler = new PasswordHandler();
+        var accessHandler = new AccessHandler();
+
+        emailHandler.SetNext(passwordHandler).SetNext(accessHandler);
+
+        string request = "test@example.com";
+        emailHandler.HandleRequest(request);
+    }
+}
